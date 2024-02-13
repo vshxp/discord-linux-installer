@@ -1,13 +1,5 @@
 #!/bin/bash
 
-check_discord_update() {
-    if command -v "discord-update" &> /dev/null; then
-        return 0  # Command exists
-    else
-        return 1  # Command does not exist
-    fi
-}
-
 download_discord() {
     echo "Downloading latest Discord version..."
     url="https://discord.com/api/download?platform=linux&format=tar.gz"
@@ -18,9 +10,9 @@ download_discord() {
 
 install_discord() {
     echo "Installing latest discord..."
-    # sudo rm -rf /opt/discord
-    # sudo tar -xvzf discord.tar.gz -C /opt -k >/dev/null 2>&1
-    sudo tar -xvzf discord.tar.gz --strip-components=1 -C /opt/discord -k >/dev/null 2>&1
+    sudo rm -rf /opt/discord
+    sudo tar -xvzf discord.tar.gz -C /opt -k >/dev/null 2>&1
+    # sudo tar -xvzf discord.tar.gz --strip-components=1 -C /opt/discord -k >/dev/null 2>&1
     sudo ln -sf /opt/discord/Discord /usr/bin/discord
 }
 
@@ -45,14 +37,25 @@ cleanup() {
 
 create_update_alias() {
     echo "Creating discord-update alias"
-    sudo cp ./discord-update.sh /opt/discord/discord-update
-    sudo ln -sf /opt/discord/discord-update /usr/bin/discord-update
+    sudo mkdir /opt/discord-updater
+    sudo cp ./discord-update.sh /opt/discord-updater/discord-updater
+    sudo ln -sf /opt/discord-updater/discord-updater /usr/bin/discord-updater
 }
 
-echo "Discord update v2"
+folder_exists() {
+  local folder_path="/opt/discord-updater/"
+
+  if [ -d "$folder_path" ]; then
+    return 1  # Folder exists
+  else
+    return 0  # Folder does not exist
+  fi
+}
+
+echo "Discord updater v2.1"
 download_discord
 install_discord
-if check_discord_update; then
+if folder_exists; then
     create_update_alias
     create_icon
 fi
