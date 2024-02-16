@@ -10,10 +10,9 @@ download_discord() {
 
 install_discord() {
     echo "Installing latest discord..."
-    sudo rm -rf /opt/discord
+    sudo rm -rf /opt/Discord
     sudo tar -xvzf discord.tar.gz -C /opt -k >/dev/null 2>&1
-    # sudo tar -xvzf discord.tar.gz --strip-components=1 -C /opt/discord -k >/dev/null 2>&1
-    sudo ln -sf /opt/discord/Discord /usr/bin/discord
+    sudo ln -sf /opt/Discord/Discord /usr/bin/discord
 }
 
 create_icon() {
@@ -23,7 +22,7 @@ create_icon() {
 Name=Discord
 Comment=All-in-one voice and text chat for gamers
 Exec=/usr/bin/discord
-Icon=/opt/discord/discord.png
+Icon=/opt/Discord/discord.png
 Terminal=false
 Type=Application
 Categories=Network;InstantMessaging;Game;
