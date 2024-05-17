@@ -1,11 +1,45 @@
 #!/bin/bash
 
+function is_aria2c_installed() {
+  if command -v aria2c >/dev/null 2>&1; then
+    return 0  # Success (aria2c found)
+  else
+    return 1  # Failure (aria2c not found)
+  fi
+}
+
+function install_aria2c() {
+  echo "Installing aria2..."
+  # Detect package manager
+  if command -v apt >/dev/null 2>&1; then
+    sudo apt install aria2
+  elif command -v pamac >/dev/null 2>&1; then
+    sudo pamac install aria2
+  elif command -v yum >/dev/null 2>&1; then
+    sudo yum install aria2
+  elif command -v dnf >/dev/null 2>&1; then
+    sudo dnf install aria2
+  else
+    echo "Unsupported package manager. Please install aria2 manually."
+    return 1  # failure
+  fi
+
+  echo "aria2 installation complete."
+  return 0  # success
+}
+
 download_discord() {
-    echo "Downloading latest Discord version..."
-    url="https://discord.com/api/download?platform=linux&format=tar.gz"
-    output_file="discord.tar.gz"
-    curl -L -o "$output_file" -A "Mozilla/5.0" "$url"
-    echo "Download complete. The file is saved as: $output_file"
+  echo "Downloading latest Discord version..."
+  url="https://discord.com/api/download?platform=linux&format=tar.gz"
+  output_file="discord.tar.gz"
+
+  # Number of parallel download to get download speed
+  paralell_download=8
+
+  # Use aria2c with max threads and output filename
+  aria2c -x "$paralell_download" -o "$output_file" "$url"
+
+  echo "Download complete. The file is saved as: $output_file"
 }
 
 install_discord() {
@@ -16,8 +50,8 @@ install_discord() {
 }
 
 create_icon() {
-    echo "Creating desktop icon" 
-    cat <<EOF > ~/.local/share/applications/discord.desktop
+  echo "Creating desktop icon" 
+  cat <<EOF > ~/.local/share/applications/discord.desktop
 [Desktop Entry]
 Name=Discord
 Comment=All-in-one voice and text chat for gamers
@@ -52,6 +86,14 @@ folder_exists() {
 }
 
 echo "Discord updater v2.1"
+if is_aria2c_installed; then
+  echo "aria2c is installed"
+else
+  echo "aria2c is not installed"
+  install_aria2c
+fi
+
+
 download_discord
 install_discord
 if folder_exists; then
