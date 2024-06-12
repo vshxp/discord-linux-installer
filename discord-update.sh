@@ -15,6 +15,8 @@ function install_aria2c() {
     sudo apt install aria2
   elif command -v pamac >/dev/null 2>&1; then
     sudo pamac install aria2
+  elif command -v yay >/dev/null 2>&1; then
+    yay -Sy aria2
   elif command -v yum >/dev/null 2>&1; then
     sudo yum install aria2
   elif command -v dnf >/dev/null 2>&1; then
